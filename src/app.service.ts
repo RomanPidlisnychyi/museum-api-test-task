@@ -6,6 +6,6 @@ export class AppService {
   async getHello(): Promise<void> {
     const objectIDs = await getObjectIDs();
     const objects = await getResponseByObjectIDs(objectIDs);
-    console.log('objects', objects);
+    // console.log('objects', objects);
   }
 }
