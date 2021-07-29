@@ -1,31 +1,24 @@
-import * as fetch from 'node-fetch';
-import { configService } from '../../config';
-import { NotFoundException } from '@nestjs/common';
+import axios from 'axios';
+import { BadRequestException, NotFoundException } from '@nestjs/common';
 
-const baseApiURL = 'https://collectionapi.metmuseum.org/public/collection/v1';
-const options = {
-  headers: {
-    Cookie: configService.getCookie(),
-  },
+axios.defaults.baseURL = 'https://collectionapi.metmuseum.org/public/collection/v1';
+
+export const getObjectIDs = async (departmentId: number) => {
+  try {
+    const response = await axios(`/objects?departmentIds=${departmentId}`);
+    return response.data?.objectIDs;
+  } catch (err) {
+    throw new BadRequestException(err);
+  }
 };
 
-export const getObjectIDs = () => {
-  return fetch(`${baseApiURL}/objects?departmentIds=11`, options)
-    .then((res) => res.json())
-    .then((data) => data.objectIDs);
-};
-
-export const getResponseByObjectIDs = async (objectIDs: number[]) => {
-  const oneHundredObjectIDs = objectIDs.filter((_, index) => index < 20);
+export const getResponseByObjectIDs = async (objectIDs: number[], quantity: number) => {
+  const oneHundredObjectIDs = objectIDs.filter((_, index) => index < quantity);
   if (!oneHundredObjectIDs.length) {
     throw new NotFoundException('ObjectIDs not found');
   }
 
-  const arrayObjects = await Promise.all(
-    oneHundredObjectIDs.map((objectID) =>
-      fetch(`${baseApiURL}/objects/${objectID}`, options).then((res) => res.json()),
-    ),
+  return Promise.all(
+    oneHundredObjectIDs.map((objectID) => axios(`/objects/${objectID}`).then((response) => response.data)),
   );
-
-  return arrayObjects;
 };

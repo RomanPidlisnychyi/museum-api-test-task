@@ -1,11 +1,19 @@
 import { Injectable } from '@nestjs/common';
-import { getObjectIDs, getResponseByObjectIDs } from './common';
+import {
+  getObjectIDs,
+  getResponseByObjectIDs,
+  getNeededFieldsFromApiResponse,
+  getInfoFromImage,
+  MainResponse,
+  MainRequestType,
+} from './common';
 
 @Injectable()
 export class AppService {
-  async getHello(): Promise<void> {
-    const objectIDs = await getObjectIDs();
-    const objects = await getResponseByObjectIDs(objectIDs);
-    // console.log('objects', objects);
+  async getTransformedApiResponse(dto: MainRequestType): Promise<MainResponse[]> {
+    const objectIDs = await getObjectIDs(dto.department);
+    const objects = await getResponseByObjectIDs(objectIDs, dto.quantityObjectsInResponse);
+    const needFields = getNeededFieldsFromApiResponse(objects);
+    return getInfoFromImage(needFields);
   }
 }
