@@ -1,21 +1,3 @@
-#Setup project
-
-##1) Install postgres:
-###Linux
-sudo apt-get update
-
-sudo apt-get install postgresql postgresql-contrib
-
-sudo -i -u postgres
-
-createuser --interactive
-
-createdb dbName
-
-##2) Install node modules:
-
-npm i
-
 ________________________________________________________________________________
 
 
